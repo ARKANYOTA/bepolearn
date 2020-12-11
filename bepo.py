@@ -1,6 +1,7 @@
 from Get import getkey
 import os
 import readlist
+import random
 def ikey():
 	key = getkey()
 	if key=="\x03":
@@ -12,36 +13,72 @@ size1 = os.get_terminal_size()[1]
 def clear():
 	print("\033[1;1H\033[2J", end ="")
 	print()
+
+def Comparaison(motc, motm):
+	mote = ""
+	for i in range(min(len(motc),len(motm))):
+		if motc[i]==motm[i]:
+			mote += "\033[32m"+motm[i]+"\033[0m"  #green
+		else:
+			mote += "\033[33m"+motm[i]+"\033[0m"   #red
+	return mote
+
 clear()
 
-
+Actualiserlemot = True
 listechar = []
 alllistechar = ['b', 'é', 'p', 'o', 'è', '^', 'v', 'd', 'l', 'j', 'z', 'w', 'ç', 'm', 'n', 'r', 's', 't', 'c', ',', 'e', 'i', 'u', 'a', 'à', 'ê', 'y', 'x', '.', 'k', "'", 'q', 'g', 'h', 'f']
-
+motchoisi = ""
+motecrit = ""
 Rmenu = True
 nb = 0
 with open("read.txt") as f:
 	mots = []
 	for i in f.readlines():
 		mots += [i.replace("\n","")]
+
 while True:
+	with open("read.txt", "r") as f:
+		listdesmots = f.readlines()
 	clear()
 	#  Print Number
 	print("^C: Exit program")
 	print("^R: Option de génération")
+	print("^G: Actualiser le mot")
+
+	if Actualiserlemot:
+		if listdesmots !=[]:
+			motchoisi = random.choice(listdesmots).replace("\n","")
+			motecrit = ""
+		else:
+			motchoisi = ""
+			motecrit = ""
+		Actualiserlemot=False
+	print("---")
+	if motchoisi == "":
+		print("Aucun mots")
+	else:
+		print(motchoisi)
+
+		print(Comparaison(motchoisi, motecrit))
+	print("---")
 
 	Tkey = ikey()
-	if Tkey=="\x12": #  Ctrl R
+	if Tkey=="\x07" or Tkey=="\r": # Ctrl G
+		Actualiserlemot=True
+	elif Tkey=="\x12": #  Ctrl R
 		Rmenu = True
 		while Rmenu:
 			clear()
 			#  Print Number
+			print("^A: Set all char")
 			print("^C: Exit program")
 			print("^E: Exit option de génération")
 			print("^G: Genérér la liste")
+			print("^V: Vider la liste")
 			print("^D: Print Liste")
 			print("Number of char : ", end ="")
-			
+
 			if nb == 0:
 				print("All")
 			elif nb == 1:
@@ -60,6 +97,10 @@ while True:
 					for i in fic.readlines():
 						print(i.replace("\t", "").replace("\n", ""))
 				input("\npress for pass:")
+			elif Rkey=="\x01":
+				listechar = alllistechar[:]
+			elif Rkey=="\x16":
+				listechar = []
 			elif Rkey=="\x1b[A":
 				nb = (nb+1)%25
 			elif Rkey=="\x1b[B":
@@ -70,9 +111,11 @@ while True:
 						del listechar[listechar.index(Rkey)]
 					else:
 						listechar += [Rkey]
+	elif Tkey in alllistechar:
+		motecrit += Tkey
 
-			
-			
+
+
 
 
 
@@ -101,11 +144,11 @@ while True:
 """
 print("\033[1;1H\033[2J", end ="")
 Texte = [
-"Un texte répond de façon plus ou moins pertinente à des critères qui en déterminent la qualité littéraire.", 
-"On retient en particulier la structure d'ensemble, la syntaxe et la ponctuation,", 
+"Un texte répond de façon plus ou moins pertinente à des critères qui en déterminent la qualité littéraire.",
+"On retient en particulier la structure d'ensemble, la syntaxe et la ponctuation,",
 "l'orthographe lexicale et grammaticale, la pertinence et la richesse du vocabulaire,",
 "la présence de figures de style, le registre de langue et la fonction recherchée",
-"(narrative, descriptive, expressive, argumentative, injonctive, poétique).", 
+"(narrative, descriptive, expressive, argumentative, injonctive, poétique).",
 "C'est l'objet de l'analyse littéraire."
 ]
 Copy = []
